@@ -97,6 +97,17 @@ app.get('/logout', async (req, res) => {
     res.json({ status: 'logged_out' });
 });
 
+// cek server
+app.get('/status', (req, res) => {
+    if (isReady) {
+        return res.json({ status: 'ready' });
+    }
+    if (qrCodeData) {
+        return res.json({ status: 'waiting_for_qr' });
+    }
+    return res.json({ status: 'not_logged_in' });
+});
+
 // Endpoint untuk kirim pesan
 // contoh http://127.0.0.1:3000/send?nm=6282217417425&m=hallo
 app.get('/send', async (req, res) => {
