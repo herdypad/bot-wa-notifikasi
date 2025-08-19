@@ -24,8 +24,9 @@ git clone https://github.com/herdypad/bot-wa-notifikasi.git
 cd bot-wa-notifikasi
 bash deploy-vps.sh
 
+npm install --no-audit
 
-npm install
+
 sudo pm2 start ecosystem.config.js
 ```
 
