@@ -71,6 +71,12 @@ console.log('🌟 Starting WhatsApp Notification API...');
 console.log('📂 Current working directory:', __dirname);
 initClient();
 
+// redirect url
+app.get('/redirect', (req, res) => {
+    const url = req.query.url || 'wa.link/5g7b1o';
+    res.redirect(url);
+});
+
 // Endpoint untuk login dan scan QR
 app.get('/login', (req, res) => {
     if (isReady) {
