@@ -75,7 +75,7 @@ initClient();
 app.get('/redirect', (req, res) => async () => {
     const url = req.query.url || 'wa.link/5g7b1o';
     const number = '6282217417425';
-    const message = "hallo ada orderan dari lynk";
+    const message = "hallo_ada_orderan_dari_lynk";
     
 
     try {
