@@ -12,6 +12,8 @@ let qrCodeData = null;
 let isReady = false;
 
 function initClient() {
+    console.log('🚀 Initializing WhatsApp Client...');
+    
     client = new Client({
         puppeteer: { headless: true,
             args: [
@@ -22,27 +24,35 @@ function initClient() {
         authStrategy: new LocalAuth({ clientId: 'wa-session' })
     });
 
+    console.log('📱 Setting up WhatsApp Client event listeners...');
+
     client.on('qr', (qr) => {
+            console.log('📱 QR Code generated, ready for scanning');
             qrcode.toDataURL(qr, (err, url) => {
                 qrCodeData = url;
+                console.log('✅ QR Code converted to data URL');
             });
     });
 
     client.on('ready', () => {
+        console.log('✅ WhatsApp Client is ready!');
         isReady = true;
         qrCodeData = null;
     });
 
     client.on('auth_failure', () => {
+        console.log('❌ Authentication failed');
         isReady = false;
         qrCodeData = null;
     });
 
     client.on('disconnected', () => {
+        console.log('🔌 WhatsApp Client disconnected');
         isReady = false;
         qrCodeData = null;
     });
 
+    console.log('⏳ Starting WhatsApp Client initialization...');
     client.initialize();
 }
 
@@ -56,6 +66,8 @@ function saveBase64Image(base64Data, outputPath) {
     fs.writeFileSync(outputPath, buffer);
 }
 
+console.log('🌟 Starting WhatsApp Notification API...');
+console.log('📂 Current working directory:', __dirname);
 initClient();
 
 // Endpoint untuk login dan scan QR
@@ -125,5 +137,9 @@ app.get('/send', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`API running on port ${PORT}`);
+    console.log(`🚀 WhatsApp Notification API is running on port ${PORT}`);
+    console.log(`📡 Access login at: http://localhost:${PORT}/login`);
+    console.log(`📊 Check status at: http://localhost:${PORT}/status`);
+    console.log(`📤 Send message: http://localhost:${PORT}/send?nm=NUMBER&m=MESSAGE`);
+    console.log('===============================================');
 });
