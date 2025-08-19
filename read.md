@@ -61,3 +61,8 @@ apt-get install -y \
     libcairo2 \
     libnss3 \
     libx11-xcb1
+
+
+
+<!-- delate -->
+rm -rf node_modules package-lock.json package.json 

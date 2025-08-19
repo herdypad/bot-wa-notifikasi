@@ -1,5 +1,5 @@
 const express = require('express');
-import crypto from "crypto";
+const CryptoJS = require("crypto-js");
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode');
 const fs = require('fs');
@@ -140,10 +140,7 @@ app.post("/webhook/lynk", (req, res) => {
     const signatureString = amount + refId + messageId + 'ynic9rerpv15UEbBgrA79rF4rYj-qJX4';
 
     // Hash pakai SHA256
-    const calculatedSignature = crypto
-      .createHash("sha256")
-      .update(signatureString)
-      .digest("hex");
+    const calculatedSignature = CryptoJS.SHA256(signatureString).toString();
 
     // Validasi signature
     if (calculatedSignature !== receivedSignature) {
