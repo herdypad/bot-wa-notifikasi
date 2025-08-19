@@ -60,7 +60,7 @@ app.get('/login', (req, res) => {
     if (qrCodeData) {
         // console.log('QR RECEIVED', qrCodeData);
         // return res.json({ qr: qrCodeData });
-        saveBase64Image(qrCodeData, './qr.png');
+        // saveBase64Image(qrCodeData, './qr.png');
         return res.send(`
             <html>
             <body>
