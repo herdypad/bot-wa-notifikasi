@@ -97,15 +97,9 @@ app.get('/logout', async (req, res) => {
     res.json({ status: 'logged_out' });
 });
 
-// cek server
+// cek server on
 app.get('/status', (req, res) => {
-    if (isReady) {
-        return res.json({ status: 'ready' });
-    }
-    if (qrCodeData) {
-        return res.json({ status: 'waiting_for_qr' });
-    }
-    return res.json({ status: 'not_logged_in' });
+    res.json({ status: 'ok' });
 });
 
 // Endpoint untuk kirim pesan
