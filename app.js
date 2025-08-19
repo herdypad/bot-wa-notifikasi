@@ -1,5 +1,5 @@
 const express = require('express');
-const CryptoJS = require("crypto-js");
+// const CryptoJS = require("crypto-js");
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode');
 const fs = require('fs');
@@ -123,44 +123,44 @@ app.get('/status', (req, res) => {
     res.json({ status: 'ok' });
 });
 
-// webhook 
-// Endpoint Webhook
-app.post("/webhook/lynk", (req, res) => {
-  try {
-    // Ambil signature dari header
-    const receivedSignature = req.headers["x-lynk-signature"];
+// // webhook 
+// // Endpoint Webhook
+// app.post("/webhook/lynk", (req, res) => {
+//   try {
+//     // Ambil signature dari header
+//     const receivedSignature = req.headers["x-lynk-signature"];
 
-    // Ambil data dari body
-    const body = req.body;
-    const refId = body?.data?.message_data?.refId || "";
-    const amount = body?.data?.message_data?.totals?.grandTotal?.toString() || "";
-    const messageId = body?.data?.message_id || "";
+//     // Ambil data dari body
+//     const body = req.body;
+//     const refId = body?.data?.message_data?.refId || "";
+//     const amount = body?.data?.message_data?.totals?.grandTotal?.toString() || "";
+//     const messageId = body?.data?.message_id || "";
 
-    // Buat string untuk hashing
-    const signatureString = amount + refId + messageId + 'ynic9rerpv15UEbBgrA79rF4rYj-qJX4';
+//     // Buat string untuk hashing
+//     const signatureString = amount + refId + messageId + 'ynic9rerpv15UEbBgrA79rF4rYj-qJX4';
 
-    // Hash pakai SHA256
-    const calculatedSignature = CryptoJS.SHA256(signatureString).toString();
+//     // Hash pakai SHA256
+//     const calculatedSignature = CryptoJS.SHA256(signatureString).toString();
 
-    // Validasi signature
-    if (calculatedSignature !== receivedSignature) {
-      console.error("❌ Invalid signature");
-      return res.status(401).json({ error: "Invalid signature" });
-    }
+//     // Validasi signature
+//     if (calculatedSignature !== receivedSignature) {
+//       console.error("❌ Invalid signature");
+//       return res.status(401).json({ error: "Invalid signature" });
+//     }
 
-    // Kalau valid → proses data transaksi
-    console.log("✅ Webhook diterima:", body);
+//     // Kalau valid → proses data transaksi
+//     console.log("✅ Webhook diterima:", body);
 
-    // contoh: simpan ke database atau trigger notifikasi
-    // await saveTransactionToDB(body.data.message_data);
+//     // contoh: simpan ke database atau trigger notifikasi
+//     // await saveTransactionToDB(body.data.message_data);
 
-    // Wajib balas 200 agar Lynk tidak retry
-    res.status(200).json({ status: "ok" });
-  } catch (err) {
-    console.error("Webhook error:", err.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//     // Wajib balas 200 agar Lynk tidak retry
+//     res.status(200).json({ status: "ok" });
+//   } catch (err) {
+//     console.error("Webhook error:", err.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 // Endpoint untuk kirim pesan
 // contoh http://127.0.0.1:3000/send?nm=6282217417425&m=hallo
