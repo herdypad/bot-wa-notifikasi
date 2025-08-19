@@ -72,21 +72,38 @@ console.log('📂 Current working directory:', __dirname);
 initClient();
 
 // redirect url
-app.get('/redirect', (req, res) => async () => {
+app.get('/redirect', async (req, res) => {
     const url = req.query.url || 'wa.link/5g7b1o';
     const number = '6282217417425';
     const message = "hallo_ada_orderan_dari_lynk";
-    
 
+    if (!isReady) {
+        // return res.status(400).json({ error: 'WhatsApp not ready' });
+    }
+    if (!number || !message) {
+        // return res.status(400).json({ error: 'nm and m query parameters required' });
+    }
     try {
         const chatId = number.includes('@c.us') ? number : `${number}@c.us`;
         await client.sendMessage(chatId, message);
-       
+        // res.json({ status: 'sent', number, message });
     } catch (err) {
-       
+        // res.status(500).json({ error: err.message });
     }
-
-    res.redirect(url);
+    const redirectUrl = url.startsWith('http') ? url : `https://${url}`;
+    res.send(`
+        <html>
+        <head>
+            <meta http-equiv="refresh" content="2;url=${redirectUrl}">
+            <title>Redirecting...</title>
+        </head>
+        <body>
+            <h2>Order Sent Successfully!</h2>
+            <p>You will be redirected to <a href="${redirectUrl}">${url}</a> in 2 seconds...</p>
+            <p>If not redirected automatically, <a href="${redirectUrl}">click here</a></p>
+        </body>
+        </html>
+    `);
 });
 
 // Endpoint untuk login dan scan QR
