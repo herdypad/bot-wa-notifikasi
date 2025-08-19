@@ -37,6 +37,7 @@ sudo pm2 start ecosystem.config.js
 - `GET /send?nm=NUMBER&m=MESSAGE` - Kirim pesan
 
 npm install whatsapp-web.js express qrcode
+i % npm install crypto-js
 
 
 
