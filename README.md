@@ -2,4 +2,4 @@
 
 
 auto installl
-curl -fsSL https://raw.githubusercontent.com/yourusername/wa-api-installer/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/herdypad/bot-wa-notifikasi/refs/heads/main/install.sh?token=GHSAT0AAAAAADGYSQ6Y2TCGC6KLRWVWMZLI2FEEZJA | bash

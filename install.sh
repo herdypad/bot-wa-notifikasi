@@ -39,8 +39,8 @@ npm install whatsapp-web.js express qrcode
 
 # Download main application file
 echo "📄 Downloading application files..."
-curl -fsSL https://raw.githubusercontent.com/yourusername/wa-api-installer/main/app.js -o app.js
-curl -fsSL https://raw.githubusercontent.com/yourusername/wa-api-installer/main/.gitignore -o .gitignore
+curl -fsSL https://raw.githubusercontent.com/herdypad/bot-wa-notifikasi/refs/heads/main/app.js -o app.js
+curl -fsSL https://raw.githubusercontent.com/herdypad/bot-wa-notifikasi/refs/heads/main/.gitignore -o .gitignore
 
 # Make sure files are executable
 chmod +x app.js

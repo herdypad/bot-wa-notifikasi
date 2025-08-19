@@ -92,13 +92,16 @@ app.get('/logout', async (req, res) => {
 });
 
 // Endpoint untuk kirim pesan
-app.post('/send', async (req, res) => {
-    const { number, message } = req.body || {};
+// contoh http://127.0.0.1:3000/send?nm=6282217417425&m=hallo
+app.get('/send', async (req, res) => {
+    const number = req.query.nm;
+    const message = req.query.m;
+    
     if (!isReady) {
         return res.status(400).json({ error: 'WhatsApp not ready' });
     }
     if (!number || !message) {
-        return res.status(400).json({ error: 'number and message required' });
+        return res.status(400).json({ error: 'nm and m query parameters required' });
     }
     try {
         const chatId = number.includes('@c.us') ? number : `${number}@c.us`;
