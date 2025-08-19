@@ -81,10 +81,18 @@ app.get('/login', (req, res) => {
         // saveBase64Image(qrCodeData, './qr.png');
         return res.send(`
             <html>
+            <head>
+            <script>
+                setTimeout(() => {
+                location.reload();
+                }, 2000);
+            </script>
+            </head>
             <body>
-                <h2>Scan QR Code to Login</h2>
-                <img src="data:image/png;base64,${qrCodeData.split(',')[1]}" alt="QR Code" />
-                <p>Refresh the page if QR code doesn't update</p>
+            <h2>Scan QR Code to Login</h2>
+            <img src="data:image/png;base64,${qrCodeData.split(',')[1]}" alt="QR Code" />
+            <p>Refresh the page if QR code doesn't update</p>
+            <p>Page will auto-refresh every 2 seconds</p>
             </body>
             </html>
         `);
