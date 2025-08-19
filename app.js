@@ -137,6 +137,15 @@ app.post("/webhook/lynk", (req, res) => {
     const messageId = body?.data?.message_id || "";
 
     // Buat string untuk hashing
+    /**
+     * Creates a signature string by concatenating amount, reference ID, message ID, and secret key.
+     * This string is used for generating cryptographic signatures to validate payment transactions.
+     * 
+     * @type {string} signatureString - The concatenated string containing payment details and secret key
+     * @description Combines transaction parameters (amount + refId + messageId + secretKey) for signature validation
+     * @example
+     * // signatureString = "10000REF123MSG456ynic9rerpv15UEbBgrA79rF4rYj-qJX4"
+     */
     const signatureString = amount + refId + messageId + 'ynic9rerpv15UEbBgrA79rF4rYj-qJX4';
 
     // Hash pakai SHA256
