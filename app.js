@@ -135,7 +135,7 @@ app.get('/send', async (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 80;
 app.listen(PORT, () => {
     console.log(`🚀 WhatsApp Notification API is running on port ${PORT}`);
     console.log(`📡 Access login at: http://localhost:${PORT}/login`);
