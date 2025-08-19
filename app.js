@@ -13,6 +13,13 @@ let isReady = false;
 
 function initClient() {
     client = new Client({
+        puppeteer: {
+        headless: true,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+        ],
+    },
         authStrategy: new LocalAuth({ clientId: 'wa-session' })
     });
 
