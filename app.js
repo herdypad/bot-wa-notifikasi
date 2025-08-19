@@ -1,4 +1,5 @@
 const express = require('express');
+import crypto from "crypto";
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode');
 const fs = require('fs');
