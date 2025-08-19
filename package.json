@@ -1,20 +1,7 @@
 {
-  "name": "wa_notif_api",
-  "version": "1.0.0",
-  "description": "WhatsApp API using whatsapp-web.js",
-  "main": "app.js",
-  "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
-  },
   "dependencies": {
-    "convert-base64-to-image": "^0.0.16",
     "express": "^5.1.0",
     "qrcode": "^1.5.4",
-    "qrcode-terminal": "^0.12.0",
     "whatsapp-web.js": "^1.32.0"
-  },
-  "keywords": ["whatsapp", "api", "bot"],
-  "author": "herdypad",
-  "license": "MIT"
+  }
 }

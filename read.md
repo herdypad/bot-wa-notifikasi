@@ -22,6 +22,9 @@ Atau manual:
 ```bash
 git clone https://github.com/herdypad/bot-wa-notifikasi.git
 cd bot-wa-notifikasi
+bash deploy-vps.sh
+
+
 npm install
 sudo pm2 start ecosystem.config.js
 ```
