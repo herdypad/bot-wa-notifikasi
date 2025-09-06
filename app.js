@@ -3,6 +3,7 @@ const CryptoJS = require("crypto-js");
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode');
 const fs = require('fs');
+const https = require("https");
 
 
 const app = express();
@@ -11,6 +12,12 @@ app.use(express.json());
 let client;
 let qrCodeData = null;
 let isReady = false;
+
+// Load SSL cert
+const options = {
+  key: fs.readFileSync("server.key"),
+  cert: fs.readFileSync("server.cert")
+};
 
 function initClient() {
     console.log('🚀 Initializing WhatsApp Client...');
@@ -227,11 +234,11 @@ app.get('/send', async (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 80;
-app.listen(PORT, () => {
-    console.log(`🚀 WhatsApp Notification API is running on port ${PORT}`);
-    console.log(`📡 Access login at: http://localhost:${PORT}/login`);
-    console.log(`📊 Check status at: http://localhost:${PORT}/status`);
-    console.log(`📤 Send message: http://localhost:${PORT}/send?nm=NUMBER&m=MESSAGE`);
+const PORT = process.env.PORT || 443;
+https.createServer(options, app).listen(PORT, () => {
+    console.log(`🚀 WhatsApp Notification API is running on HTTPS port ${PORT}`);
+    console.log(`📡 Access login at: https://localhost:${PORT}/login`);
+    console.log(`📊 Check status at: https://localhost:${PORT}/status`);
+    console.log(`📤 Send message: https://localhost:${PORT}/send?nm=NUMBER&m=MESSAGE`);
     console.log('===============================================');
 });
