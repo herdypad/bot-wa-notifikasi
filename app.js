@@ -155,9 +155,6 @@ app.get('/login', (req, res) => {
 
 // Endpoint untuk logout dan hapus sesi
 app.get('/logout', async (req, res) => {
-    if (!isReady) {
-        return res.json({ status: 'not_logged_in' });
-    }
     await client.logout();
     // Hapus folder sesi
     try {
