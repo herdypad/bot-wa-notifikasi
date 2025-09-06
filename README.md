@@ -9,3 +9,10 @@ curl -fsSL https://raw.githubusercontent.com/herdypad/bot-wa-notifikasi/refs/hea
 <!-- run in pm2 -->
 
 pm2 start app.js --name wa
+
+
+
+# Download Node Js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+node --version  # Should show v20.x.x

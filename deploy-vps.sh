@@ -6,14 +6,22 @@ set -e
 echo "🚀 Deploying WhatsApp API to VPS..."
 
 # Install Node.js if not installed
-echo "📦 Installing Node.js..."
+echo "📦 Installing Node.js 20..."
 if ! command -v node &> /dev/null; then
     echo "Node.js not found, installing..."
-    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
     sudo apt-get install -y nodejs
     echo "✅ Node.js installed successfully"
 else
-    echo "✅ Node.js already installed: $(node --version)"
+    current_version=$(node --version | cut -d'v' -f2 | cut -d'.' -f1)
+    if [ "$current_version" -lt 20 ]; then
+        echo "Upgrading Node.js from v$(node --version) to v20..."
+        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+        echo "✅ Node.js upgraded successfully"
+    else
+        echo "✅ Node.js already installed: $(node --version)"
+    fi
 fi
 
 # Install PM2 globally if not installed

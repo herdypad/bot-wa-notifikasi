@@ -1,4 +1,5 @@
 rm -rf node_modules
 rm package-lock.json
-rm -r .wwebjs_auth
-rm -r .wwebjs_cache
+rm -rf .wwebjs_auth
+rm -rf .wwebjs_cache
+rm -rf auth_info_baileys
