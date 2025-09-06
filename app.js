@@ -109,7 +109,23 @@ app.get('/redirect', async (req, res) => {
 // Endpoint untuk login dan scan QR
 app.get('/login', (req, res) => {
     if (isReady) {
-        return res.json({ status: 'already_logged_in' });
+        return res.send(`
+            <html>
+            <head>
+            <script>
+                setTimeout(() => {
+                location.reload();
+                }, 2000);
+            </script>
+            </head>
+            <body>
+            <h2>✅ WhatsApp is Ready!</h2>
+            <p>You are successfully logged in to WhatsApp.</p>
+            <p>You can now send messages through the API.</p>
+            <a href="/status">Check Status</a>
+            </body>
+            </html>
+        `);
     }
     if (qrCodeData) {
         // console.log('QR RECEIVED', qrCodeData);
