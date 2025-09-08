@@ -234,79 +234,47 @@ app.post("/webhook/lynk", async (req, res) => {
         // Ambil data dari request body
         const { event, data } = req.body;
         
-        if (event !== 'payment.received' && event !== 'test_event') {
-            console.log(`ℹ️ Ignoring event: ${event}`);
-            return res.status(200).json({ status: "ok", message: "Event ignored" });
-        }
+        console.log(`📋 Processing all events: ${event}`);
 
-        // Handle test event
-        if (event === 'test_event') {
-            console.log('🧪 Processing test event');
-            
-            if (isReady) {
-                const phoneNumber = '6282217417425';
-                const message = `🧪 TEST WEBHOOK BERHASIL!\n\n` +
-                              `📋 Event: ${event}\n` +
-                              `💬 Message: ${data.message}\n` +
-                              `⏰ Timestamp: ${new Date(data.timestamp).toLocaleString('id-ID')}`;
-
-                try {
-                    const jid = phoneNumber.includes('@s.whatsapp.net') ? phoneNumber : `${phoneNumber}@s.whatsapp.net`;
-                    await sock.sendMessage(jid, { text: message });
-                    console.log('✅ Test WhatsApp notification sent');
-                } catch (err) {
-                    console.error('❌ Error sending test WhatsApp message:', err);
-                }
-            } else {
-                console.log('⚠️ WhatsApp not ready, test notification not sent');
-            }
-
-            return res.status(200).json({ 
-                status: "ok", 
-                message: "Test webhook processed successfully"
-            });
-        }
-
-        const { message_data, message_id } = data;
-        const { refId, totals, customer } = message_data;
-        const { grandTotal } = totals;
-
-        // Merchant key (simpan di environment variable)
-        const merchantKey = "ynic9rerpv15UEbBgrA79rF4rYj-qJX4";
-
-        // Validasi signature jika ada
-        if (receivedSignature) {
-            // Validasi signature sesuai dokumentasi Lynk
-            const signatureString = grandTotal.toString() + refId + message_id + merchantKey;
-            const calculatedSignature = CryptoJS.SHA256(signatureString).toString();
-
-            if (calculatedSignature !== receivedSignature) {
-                console.error("❌ Invalid signature");
-                console.log(`Expected: ${calculatedSignature}`);
-                console.log(`Received: ${receivedSignature}`);
-                return res.status(401).json({ error: "Unauthorized: Invalid signature" });
-            }
-            console.log('✅ Signature validated successfully');
-        } else {
-            console.log('⚠️ No signature provided, processing without validation');
-        }
-        console.log(`💰 Payment received: ${grandTotal} for refId: ${refId}`);
-
-        // Kirim notifikasi WhatsApp jika ready
+        // Kirim notifikasi WhatsApp untuk SEMUA event
         if (isReady) {
-            const phoneNumber = '6282217417425'; // Ganti dengan nomor yang sesuai
-            const message = `🎉 PEMBAYARAN DITERIMA!\n\n` +
-                          `💰 Jumlah: Rp ${grandTotal.toLocaleString('id-ID')}\n` +
-                          `📋 Ref ID: ${refId}\n` +
-                          `👤 Customer: ${customer.name}\n` +
-                          `📧 Email: ${customer.email}\n` +
-                          `📱 Phone: ${customer.phone}\n` +
-                          `⏰ Waktu: ${message_data.createdAt}`;
+            const phoneNumber = '6282217417425';
+            let message = '';
+
+            // Format pesan berdasarkan jenis event
+            if (event === 'payment.received') {
+                try {
+                    const { message_data, message_id } = data;
+                    const { refId, totals, customer } = message_data;
+                    const { grandTotal } = totals;
+
+                    message = `🎉 PEMBAYARAN DITERIMA!\n\n` +
+                             `💰 Jumlah: Rp ${grandTotal.toLocaleString('id-ID')}\n` +
+                             `📋 Ref ID: ${refId}\n` +
+                             `👤 Customer: ${customer.name}\n` +
+                             `📧 Email: ${customer.email}\n` +
+                             `📱 Phone: ${customer.phone}\n` +
+                             `⏰ Waktu: ${message_data.createdAt}`;
+                } catch (err) {
+                    message = `🎉 PEMBAYARAN DITERIMA!\n\n` +
+                             `📄 Raw Data: ${JSON.stringify(data, null, 2)}`;
+                }
+            } else if (event === 'test_event') {
+                message = `🧪 TEST WEBHOOK BERHASIL!\n\n` +
+                         `📋 Event: ${event}\n` +
+                         `💬 Message: ${data.message || 'No message'}\n` +
+                         `⏰ Timestamp: ${data.timestamp ? new Date(data.timestamp).toLocaleString('id-ID') : new Date().toLocaleString('id-ID')}`;
+            } else {
+                // Untuk event lainnya, kirim data mentah dalam format yang rapi
+                message = `📨 WEBHOOK EVENT: ${event}\n\n` +
+                         `📄 Data:\n${JSON.stringify(data, null, 2)}\n\n` +
+                         `⏰ Received: ${new Date().toLocaleString('id-ID')}`;
+            }
 
             try {
                 const jid = phoneNumber.includes('@s.whatsapp.net') ? phoneNumber : `${phoneNumber}@s.whatsapp.net`;
                 await sock.sendMessage(jid, { text: message });
-                console.log('✅ WhatsApp notification sent');
+                console.log(`✅ WhatsApp notification sent for event: ${event}`);
             } catch (err) {
                 console.error('❌ Error sending WhatsApp message:', err);
             }
@@ -314,11 +282,38 @@ app.post("/webhook/lynk", async (req, res) => {
             console.log('⚠️ WhatsApp not ready, notification not sent');
         }
 
-        // Response sukses sesuai dokumentasi
+        // Validasi signature hanya untuk payment.received (jika ada)
+        if (event === 'payment.received' && receivedSignature) {
+            try {
+                const { message_data, message_id } = data;
+                const { refId, totals } = message_data;
+                const { grandTotal } = totals;
+
+                // Merchant key
+                const merchantKey = "ynic9rerpv15UEbBgrA79rF4rYj-qJX4";
+
+                // Validasi signature sesuai dokumentasi Lynk
+                const signatureString = grandTotal.toString() + refId + message_id + merchantKey;
+                const calculatedSignature = CryptoJS.SHA256(signatureString).toString();
+
+                if (calculatedSignature !== receivedSignature) {
+                    console.error("❌ Invalid signature");
+                    console.log(`Expected: ${calculatedSignature}`);
+                    console.log(`Received: ${receivedSignature}`);
+                    return res.status(401).json({ error: "Unauthorized: Invalid signature" });
+                }
+                console.log('✅ Signature validated successfully');
+            } catch (err) {
+                console.log('⚠️ Error validating signature, but processing anyway:', err.message);
+            }
+        }
+
+        // Response sukses untuk semua event
         res.status(200).json({ 
             status: "ok", 
-            message: "Webhook processed successfully",
-            refId: refId 
+            message: `Webhook processed successfully for event: ${event}`,
+            event: event,
+            timestamp: new Date().toISOString()
         });
 
     } catch (err) {
