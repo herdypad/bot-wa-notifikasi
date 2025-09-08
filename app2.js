@@ -211,15 +211,17 @@ app.get('/status', (req, res) => {
     });
 });
 
-// Webhook endpoint for Lynk with merchant key in URL
-app.post("/webhook/lynk/:merchantKey", async (req, res) => {
+// Webhook endpoint for Lynk with phone number and merchant key in URL
+app.post("/webhook/lynk/:phoneNumber/:merchantKey", async (req, res) => {
     try {
         console.log('📥 Webhook received from Lynk');
         console.log('📋 Headers:', req.headers);
         console.log('📋 Body:', JSON.stringify(req.body, null, 2));
         
-        // Ambil merchant key dari URL parameter
+        // Ambil phone number dan merchant key dari URL parameter
+        const phoneNumber = req.params.phoneNumber;
         const merchantKey = req.params.merchantKey;
+        console.log('📱 Phone Number from URL:', phoneNumber);
         console.log('🔑 Merchant Key from URL:', merchantKey);
         
         // Ambil signature dari header (cek berbagai kemungkinan nama header)
@@ -242,7 +244,8 @@ app.post("/webhook/lynk/:merchantKey", async (req, res) => {
 
         // Kirim notifikasi WhatsApp untuk SEMUA event
         if (isReady) {
-            const phoneNumber = '6282217417425';
+            // Gunakan phone number dari URL parameter
+            console.log('📱 Using phone number from URL:', phoneNumber);
             let message = '';
 
             // Format pesan berdasarkan jenis event
