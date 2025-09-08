@@ -211,16 +211,16 @@ app.get('/status', (req, res) => {
     });
 });
 
-// Webhook endpoint for Lynk
-app.post("/webhook/lynka/:merchantKey", async (req, res) => {
+// Webhook endpoint for Lynk with merchant key in URL
+app.post("/webhook/lynk/:merchantKey", async (req, res) => {
     try {
         console.log('📥 Webhook received from Lynk');
         console.log('📋 Headers:', req.headers);
         console.log('📋 Body:', JSON.stringify(req.body, null, 2));
-        console.log('🔑 Merchant Key from URL:', req.params.merchantKey);
         
         // Ambil merchant key dari URL parameter
-        const urlMerchantKey = req.params.merchantKey;
+        const merchantKey = req.params.merchantKey;
+        console.log('🔑 Merchant Key from URL:', merchantKey);
         
         // Ambil signature dari header (cek berbagai kemungkinan nama header)
         const receivedSignature = req.headers['x-lynk-signature'] || 
@@ -293,8 +293,8 @@ app.post("/webhook/lynka/:merchantKey", async (req, res) => {
                 const { refId, totals } = message_data;
                 const { grandTotal } = totals;
 
-                // Gunakan merchant key dari URL parameter
-                const merchantKey = urlMerchantKey;
+                // Merchant key dari URL parameter
+                console.log('🔑 Using merchant key from URL:', merchantKey);
 
                 // Validasi signature sesuai dokumentasi Lynk
                 const signatureString = grandTotal.toString() + refId + message_id + merchantKey;
@@ -317,7 +317,6 @@ app.post("/webhook/lynka/:merchantKey", async (req, res) => {
             status: "ok", 
             message: `Webhook processed successfully for event: ${event}`,
             event: event,
-            merchantKey: urlMerchantKey,
             timestamp: new Date().toISOString()
         });
 
