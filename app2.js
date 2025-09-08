@@ -234,9 +234,37 @@ app.post("/webhook/lynk", async (req, res) => {
         // Ambil data dari request body
         const { event, data } = req.body;
         
-        if (event !== 'payment.received') {
+        if (event !== 'payment.received' && event !== 'test_event') {
             console.log(`ℹ️ Ignoring event: ${event}`);
             return res.status(200).json({ status: "ok", message: "Event ignored" });
+        }
+
+        // Handle test event
+        if (event === 'test_event') {
+            console.log('🧪 Processing test event');
+            
+            if (isReady) {
+                const phoneNumber = '6282217417425';
+                const message = `🧪 TEST WEBHOOK BERHASIL!\n\n` +
+                              `📋 Event: ${event}\n` +
+                              `💬 Message: ${data.message}\n` +
+                              `⏰ Timestamp: ${new Date(data.timestamp).toLocaleString('id-ID')}`;
+
+                try {
+                    const jid = phoneNumber.includes('@s.whatsapp.net') ? phoneNumber : `${phoneNumber}@s.whatsapp.net`;
+                    await sock.sendMessage(jid, { text: message });
+                    console.log('✅ Test WhatsApp notification sent');
+                } catch (err) {
+                    console.error('❌ Error sending test WhatsApp message:', err);
+                }
+            } else {
+                console.log('⚠️ WhatsApp not ready, test notification not sent');
+            }
+
+            return res.status(200).json({ 
+                status: "ok", 
+                message: "Test webhook processed successfully"
+            });
         }
 
         const { message_data, message_id } = data;
