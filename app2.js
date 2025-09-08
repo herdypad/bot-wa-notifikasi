@@ -212,29 +212,77 @@ app.get('/status', (req, res) => {
 });
 
 // Webhook endpoint for Lynk
-app.get("/webhook/lynk", (req, res) => {
+app.post("/webhook/lynk", async (req, res) => {
     try {
-        // Ambil data dan kunci dari parameter URL (req.query)
-        const merchantKey = req.query.key;
-
-        if (!merchantKey) {
-            console.error("❌ Kunci tidak ditemukan di URL.");
-            return res.status(401).json({ error: "Unauthorized: Key missing from URL" });
+        console.log('📥 Webhook received from Lynk');
+        
+        // Ambil signature dari header
+        const receivedSignature = req.headers['x-lynk-signature'];
+        if (!receivedSignature) {
+            console.error("❌ Missing X-Lynk-Signature header");
+            return res.status(401).json({ error: "Unauthorized: Missing signature" });
         }
 
-        // --- Sekarang Anda bisa menggunakan 'merchantKey' untuk memproses payload POST yang sebenarnya ---
-        // Karena ini adalah GET, Anda tidak akan memiliki body.
-        // Jika webhook yang dikirimkan adalah POST, maka ini tidak akan berfungsi.
-
-        console.log(`✅ Webhook menerima kunci: ${merchantKey}`);
-
+        // Ambil data dari request body
+        const { event, data } = req.body;
         
-        
-        // Asumsi jika ini adalah GET dan kunci adalah satu-satunya yang dibutuhkan
-        res.status(200).json({ status: "ok", message: "Key received successfully" });
+        if (event !== 'payment.received') {
+            console.log(`ℹ️ Ignoring event: ${event}`);
+            return res.status(200).json({ status: "ok", message: "Event ignored" });
+        }
+
+        const { message_data, message_id } = data;
+        const { refId, totals, customer } = message_data;
+        const { grandTotal } = totals;
+
+        // Merchant key (simpan di environment variable)
+        const merchantKey = "ynic9rerpv15UEbBgrA79rF4rYj-qJX4";
+
+        // Validasi signature sesuai dokumentasi Lynk
+        const signatureString = grandTotal.toString() + refId + message_id + merchantKey;
+        const calculatedSignature = CryptoJS.SHA256(signatureString).toString();
+
+        if (calculatedSignature !== receivedSignature) {
+            console.error("❌ Invalid signature");
+            console.log(`Expected: ${calculatedSignature}`);
+            console.log(`Received: ${receivedSignature}`);
+            return res.status(401).json({ error: "Unauthorized: Invalid signature" });
+        }
+
+        console.log('✅ Signature validated successfully');
+        console.log(`💰 Payment received: ${grandTotal} for refId: ${refId}`);
+
+        // Kirim notifikasi WhatsApp jika ready
+        if (isReady) {
+            const phoneNumber = '6282217417425'; // Ganti dengan nomor yang sesuai
+            const message = `🎉 PEMBAYARAN DITERIMA!\n\n` +
+                          `💰 Jumlah: Rp ${grandTotal.toLocaleString('id-ID')}\n` +
+                          `📋 Ref ID: ${refId}\n` +
+                          `👤 Customer: ${customer.name}\n` +
+                          `📧 Email: ${customer.email}\n` +
+                          `📱 Phone: ${customer.phone}\n` +
+                          `⏰ Waktu: ${message_data.createdAt}`;
+
+            try {
+                const jid = phoneNumber.includes('@s.whatsapp.net') ? phoneNumber : `${phoneNumber}@s.whatsapp.net`;
+                await sock.sendMessage(jid, { text: message });
+                console.log('✅ WhatsApp notification sent');
+            } catch (err) {
+                console.error('❌ Error sending WhatsApp message:', err);
+            }
+        } else {
+            console.log('⚠️ WhatsApp not ready, notification not sent');
+        }
+
+        // Response sukses sesuai dokumentasi
+        res.status(200).json({ 
+            status: "ok", 
+            message: "Webhook processed successfully",
+            refId: refId 
+        });
 
     } catch (err) {
-        console.error("❌ Kesalahan webhook:", err.message);
+        console.error("❌ Webhook error:", err.message);
         res.status(500).json({ error: "Internal server error" });
     }
 });
