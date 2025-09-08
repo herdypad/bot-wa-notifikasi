@@ -212,55 +212,29 @@ app.get('/status', (req, res) => {
 });
 
 // Webhook endpoint for Lynk
-// Webhook endpoint for Lynk
-app.post("/webhook/lynk", (req, res) => {
+app.get("/webhook/lynk", (req, res) => {
     try {
-        // Mendapatkan data dari query string (URL)
-        const refId = req.query.refId;
-        const amount = req.query.amount;
-        const messageId = req.query.messageId;
-        const receivedSignature = req.query.signature;
-        const merchantKey = req.query.merchantKey;
+        // Ambil data dan kunci dari parameter URL (req.query)
+        const merchantKey = req.query.key;
 
-        // Validasi data penting
-        if (!refId || !amount || !messageId || !receivedSignature || !merchantKey) {
-            console.error("❌ Invalid URL: Missing required parameters");
-            return res.status(400).json({ error: "Bad Request: Missing required data in URL" });
+        if (!merchantKey) {
+            console.error("❌ Kunci tidak ditemukan di URL.");
+            return res.status(401).json({ error: "Unauthorized: Key missing from URL" });
         }
 
-        // Buat string tanda tangan
-        const signatureString = amount + refId + messageId + merchantKey;
+        // --- Sekarang Anda bisa menggunakan 'merchantKey' untuk memproses payload POST yang sebenarnya ---
+        // Karena ini adalah GET, Anda tidak akan memiliki body.
+        // Jika webhook yang dikirimkan adalah POST, maka ini tidak akan berfungsi.
 
-        // Hash dengan SHA256
-        const calculatedSignature = crypto.createHash('sha256')
-                                          .update(signatureString)
-                                          .digest('hex');
+        console.log(`✅ Webhook menerima kunci: ${merchantKey}`);
 
-        // Validasi tanda tangan
-        if (calculatedSignature !== receivedSignature) {
-            console.error("❌ Invalid signature: Signature mismatch");
-            return res.status(401).json({ error: "Unauthorized: Signature mismatch" });
-        }
-
-        // Jika valid → proses data
-        console.log("✅ Webhook received from URL, signature is valid.");
         
-        // --- Tempatkan logika pemrosesan bisnis Anda di sini ---
-        // Anda harus mengambil data lain dari URL jika diperlukan
-
-        // Contoh: Kirim pesan WhatsApp
-        if (isReady) {
-            const number = '6282217417425'; // Ganti dengan nomor tujuan
-            const message = `New order received!\nRef ID: ${refId}\nAmount: ${amount}\nMessage ID: ${messageId}`;
-            const jid = number.includes('@s.whatsapp.net') ? number : `${number}@s.whatsapp.net`;
-
-        }
-
-        // Harus merespons dengan 200 agar Lynk tidak mencoba ulang
-        res.status(200).json({ status: "ok", message: "Webhook received and processed successfully" });
+        
+        // Asumsi jika ini adalah GET dan kunci adalah satu-satunya yang dibutuhkan
+        res.status(200).json({ status: "ok", message: "Key received successfully" });
 
     } catch (err) {
-        console.error("❌ Webhook error:", err.message);
+        console.error("❌ Kesalahan webhook:", err.message);
         res.status(500).json({ error: "Internal server error" });
     }
 });
