@@ -1,0 +1,19 @@
+{
+    "ownerBot": "628221741425",
+    "database": {
+        "url": "mongodb+srv://kodeidshop:Saya1010@cluster0.bffrrlc.mongodb.net/wauser?retryWrites=true&w=majority",
+        "name": "wauser",
+        "username": "kodeidshop",
+        "cluster": "cluster0.bffrrlc.mongodb.net"
+    },
+    "app": {
+        "port": 80,
+        "name": "WhatsApp Notification API",
+        "version": "1.0.0"
+    },
+    "whatsapp": {
+        "authPath": "./auth_info_baileys",
+        "defaultNumber": "6282217417425",
+        "defaultMessage": "hallo_ada_orderan_dari_lynk"
+    }
+}
