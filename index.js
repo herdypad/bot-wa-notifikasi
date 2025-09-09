@@ -281,7 +281,7 @@ app.get('/user/:nama/check-expiration', async (req, res) => {
     res.json(result);
 });
 
-app.post('/user', async (req, res) => {
+app.post('/user/saya', async (req, res) => {
     if (!userService) {
         return res.status(500).json({ error: 'User service not initialized' });
     }
