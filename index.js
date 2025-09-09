@@ -167,12 +167,7 @@ app.post("/webhook/lynk/:phoneNumber/:merchantKey", async (req, res) => {
     const userCheck = await userService.getUserByNama(phoneNumber);
     
     if (userCheck.status === 'error' || !userCheck.data) {
-        // User not found, send notification about registration
-        const result = await messageService.sendNotification(phoneNumber, "Nomor Anda belum terdaftar. Silakan daftar terlebih dahulu untuk menggunakan layanan kami.", 'manual_send');
-        if (result.status === 'error') {
-            return res.status(500).json(result);
-        }
-        return res.json(result);
+        return res.status(404).json({ error: 'User not found' });
     }
     
     // Check if user is active (not expired)
