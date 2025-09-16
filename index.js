@@ -141,7 +141,7 @@ app.get('/login', (req, res) => {
 });
 
 // Logout endpoint
-app.get('/logout', async (req, res) => {
+app.get('/dok/logout', async (req, res) => {
     try {
         if (whatsappClient) {
             await whatsappClient.logout();

@@ -114,3 +114,13 @@ API untuk mengirim notifikasi WhatsApp dengan integrasi database MongoDB Atlas.
 - ✅ Modular code structure
 - ✅ Error handling
 - ✅ Graceful shutdown
+
+
+<!-- jalankan lewat pm2 -->
+ pm2 start index.js --name bot1
+
+ pm2 start index.js --name bot1 - menjalankan aplikasi
+pm2 logs bot1 - melihat log aplikasi
+pm2 restart bot1 - restart saat ada update kode
+pm2 status - cek status aplikasi
+pm2 delete bot1 delete
