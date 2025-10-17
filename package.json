@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@whiskeysockets/baileys": "^6.7.19",
+    "@whiskeysockets/baileys": "^6.6.0",
     "crypto-js": "^4.2.0",
     "express": "^5.1.0",
     "mongoose": "^8.18.1",
