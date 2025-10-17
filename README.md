@@ -119,7 +119,7 @@ http://localhost:80/send?nm=6282217417425&m=Hello%20World
 ```json
 {
     "status": "sent",
-    "number": "6282217417425",
+    "number": "628123456789",
     "message": "Hello World"
 }
 ```
